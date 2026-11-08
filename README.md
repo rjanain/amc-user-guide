@@ -6,7 +6,8 @@ to the marked answer sheets, choosing a template, question banks, history and
 trash, common problems, and a printable checklist. Every step is shown on
 annotated screenshots of a demo exam.
 
-**Get the PDF** from the [Releases](../../releases) page: each edition is
+**Get the PDF** at <https://rjana.in/amc/guide.pdf>, which always gives the
+newest edition, or from the [Releases](../../releases) page: each edition is
 built from its tag by GitHub Actions.
 
 The portal itself is [amc-webapp](https://github.com/rjanain/amc-webapp), our

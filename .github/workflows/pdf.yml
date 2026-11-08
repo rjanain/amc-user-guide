@@ -34,6 +34,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           cp user-guide.pdf "amc-user-guide-${GITHUB_REF_NAME}.pdf"
-          gh release create "$GITHUB_REF_NAME" "amc-user-guide-${GITHUB_REF_NAME}.pdf" \
+          # The same file under a fixed name: rjana.in/amc/guide.pdf points at
+          # releases/latest/download/amc-user-guide.pdf, whatever the edition.
+          cp user-guide.pdf amc-user-guide.pdf
+          gh release create "$GITHUB_REF_NAME" "amc-user-guide-${GITHUB_REF_NAME}.pdf" amc-user-guide.pdf \
             --verify-tag --title "User guide ${GITHUB_REF_NAME#v}" \
             --notes "The AMC web portal user guide, edition ${GITHUB_REF_NAME#v}, showing amc-webapp $(cut -c1-7 amc-webapp.version)."
