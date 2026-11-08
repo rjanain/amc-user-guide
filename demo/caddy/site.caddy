@@ -1,0 +1,22 @@
+# The demo's public address, served to its Cloudflare tunnel. It stands in for
+# amc-webapp's caddy/tunnel/site.caddy: the same routes (the "amc" snippet of
+# amc-webapp's Caddyfile), and one rule more.
+http://{$AMC_PUBLIC_HOST}:8091 {
+	# Every visitor shares the demo account, so nobody may change its password
+	# or sign everyone out. Without this rule one visitor could lock all the
+	# others out until the nightly reset. A longer path than the snippet's
+	# /auth/*, so Caddy looks at it first.
+	handle /auth/account {
+		@change method POST
+		header @change Content-Type "text/html; charset=utf-8"
+		respond @change 403 {
+			body `<!doctype html><meta charset="utf-8"><title>Demo account</title><p style="font:1.1rem system-ui;margin:3rem auto;max-width:32rem">This is the shared demo account, so its password can't be changed. <a href="/">Back to the portal</a></p>`
+		}
+		reverse_proxy amc-auth:8000 {
+			header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
+			header_up X-Forwarded-Proto https
+		}
+	}
+
+	import amc {http.request.header.CF-Connecting-IP}
+}

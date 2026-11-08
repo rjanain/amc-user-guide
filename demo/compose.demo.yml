@@ -1,0 +1,26 @@
+# Added to amc-webapp's compose files by demo.sh. The demo runs production's
+# images and files, but as its own Docker project: its own containers, network,
+# volume and tunnel, within limits, so visitors can't slow down real exams.
+# The app's own memory and processor limits are AMC_MEMORY and AMC_CPUS.
+x-small-logs: &small-logs
+  logging:
+    options: { max-size: 10m, max-file: "2" }
+
+services:
+  amc-web:
+    <<: *small-logs
+    pids_limit: 512
+  amc-auth:
+    <<: *small-logs
+    # Checking a password takes about 32 MB for a moment (scrypt).
+    mem_limit: 192m
+    cpus: 0.25
+  caddy:
+    <<: *small-logs
+    mem_limit: 128m
+    cpus: 0.25
+    volumes:
+      # Takes the place of amc-webapp's caddy/tunnel (the same target).
+      - ${DEMO_DIR}/caddy:/etc/caddy-extra:ro
+  cloudflared:
+    <<: *small-logs

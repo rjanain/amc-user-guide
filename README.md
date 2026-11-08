@@ -22,6 +22,7 @@ version of the AMC team's web app. This repository only holds the guide.
 | `screenshots/` | The pictures, with `shots.tex`: where each framed element is on them. |
 | `capture/` | The script that takes the screenshots, the demo exam, class list, bank and scans ([capture/README.md](capture/README.md)). |
 | `stack/` | Starts the test copy of the portal the screenshots are taken on. |
+| `demo/` | The public demo portal: its sample exams, nightly reset and limits ([demo/README.md](demo/README.md)). |
 | `amc-webapp.version` | The amc-webapp commit this edition shows (printed on the cover). |
 
 ## Building the PDF

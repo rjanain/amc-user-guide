@@ -19,7 +19,7 @@ const USER = process.env.GUIDE_USER || 'demo_instructor';
 const PASS = process.env.GUIDE_PASS || 'Demo@1234!4567';
 const CONTAINER = process.env.GUIDE_CONTAINER || 'amcguide-amc-web-1';
 const HERE = new URL('.', import.meta.url).pathname;
-const EXAM = 'Maths Unit Test 1';
+const EXAM = process.env.GUIDE_EXAM || 'Maths Unit Test 1';   // another name: for the demo portal's exams (demo/make-seed.sh)
 const EXAM2 = 'Maths Unit Test 2';
 const OLY = 'Olympiad Practice Paper';
 const BANK = 'Class 8 Mathematics';
@@ -171,7 +171,7 @@ const scenes = {
   async fill() {
     await openStep(EXAM, 'questions');
     await replaceSection('general', file('demo-questions.tex'));
-    await editSource([['{\\large\\bf Exam title}\\hfill Date', '{\\large\\bf Maths Unit Test 1 \\textendash{} Class 8A}\\hfill 20 November 2026']]);
+    await editSource([['{\\large\\bf Exam title}\\hfill Date', `{\\large\\bf ${EXAM} \\textendash{} Class 8A}\\hfill 20 November 2026`]]);
     await openStep(EXAM, 'questions');
     await b.waitFor(`S.qdata && S.qdata.files.some(f => f.item === 'triangle')`, 20000, 'the questions');
     await b.click('[data-act=build]');
@@ -273,7 +273,7 @@ const scenes = {
   async scans() {
     const out = scanDir();
     const names = Object.fromEntries(CLASS.map((s, i) => [String(i + 1), `${s[2]} ${s[1]}`]));
-    const opts = { copies: 12, code_base: 1000, code_override: { 9: '1019' }, names, class: '8A', seed: 11,
+    const opts = { copies: 12, code_base: 1000, code_override: { 9: '1019' }, names, class: '8A', seed: Number(process.env.GUIDE_SCAN_SEED || 11),
       abilities: [0.92, 0.55, 0.78, 0.85, 0.4, 0.7, 0.62, 0.95, 0.5, 0.81, 0.3, 0.66],
       faint: [2, 6], blank_after: [6, 2], late: [12, 2], double: { 7: 'prime' } };
     const pdir = `/amc-web/files/MC-Projects/${USER}/${EXAM}`;
@@ -308,6 +308,16 @@ const scenes = {
     await openStep(EXAM, 'upload-scans', 2000);
     await b.shot('upload-done', { clip: { x: 0, y: 0, w: 980, h: 640 }, boxes: {
       stats: '#main .stats', next: { sel: '#main a.btn-primary', text: 'Check scans' }, badge: { sel: '#sidebar .step', text: 'Check scans' } } });
+  },
+
+  /* Only for the demo portal (not in a plain run): the class list, ready in an exam not marked yet. */
+  async classList() {
+    await openStep(EXAM, 'match-students', 2000);
+    await b.setFiles('#list-file', [join(HERE, 'students.csv')]);
+    await b.waitFor(`!!document.querySelector('#list-key')`, 20000, 'the class list');
+    await b.settle(1000);
+    if (await b.js(`document.querySelector('#list-key').value !== 'id'`)) await b.setValue('#list-key', 'id');
+    await sleep(1200);
   },
 
   async check() {
@@ -679,7 +689,7 @@ async function signIn() {
   await b.settle(1000);
 }
 
-const order = Object.keys(scenes);
+const order = Object.keys(scenes).filter((s) => s !== 'classList');
 let wanted = process.argv.slice(2);
 if (!wanted.length) wanted = order;
 else if (wanted.length === 1 && wanted[0].startsWith('from:')) wanted = order.slice(order.indexOf(wanted[0].slice(5)));

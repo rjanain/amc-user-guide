@@ -1,0 +1,9 @@
+# Added by demo.sh when AMC_DEMO_FILES is set: the exams live on a disk of a
+# fixed size, so uploads can't fill the server's disk (see README.md).
+volumes:
+  amc-home:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${AMC_DEMO_FILES}

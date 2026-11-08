@@ -17,3 +17,7 @@ __pycache__/
 
 # A failed capture scene's picture
 screenshots/_failed.png
+
+# The demo portal's settings (its tunnel token) and sample data (demo/make-seed.sh makes it)
+demo/demo.env
+demo/seed.tar.gz
