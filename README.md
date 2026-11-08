@@ -54,10 +54,10 @@ LaTeX mistake shows before tagging.
 
 ## The demo account
 
-The guide prints the shared demo account of amc.rjana.in (`demo_instructor`).
-Anyone with the guide can sign in with it, so it must never hold real
-students' data, and its password and exams may need resetting from time to
-time.
+The guide prints the shared account of the demo portal, amc-demo.rjana.in
+(`demo_instructor`). Anyone with the guide can sign in with it, so it must never
+hold real students' data, and it goes back to the start every night. See
+[demo/README.md](demo/README.md).
 
 ## Licence
 

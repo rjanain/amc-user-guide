@@ -11,6 +11,7 @@
 \newcommand\edition{November 2026}
 
 \newcommand\portal{\href{https://amc.rjana.in}{\texttt{amc.rjana.in}}}
+\newcommand\demoportal{\href{https://amc-demo.rjana.in}{\texttt{amc-demo.rjana.in}}}
 \newcommand\demouser{\texttt{demo\_instructor}}
 \newcommand\demopass{\texttt{Demo@1234!4567}}
 
@@ -37,7 +38,7 @@
     {\includegraphics[width=150mm]{screenshots/workspace}};
   \node[anchor=south,fill=white,draw=brand,line width=1pt,rounded corners=4pt,text width=146mm,inner sep=7pt,align=left,font=\small]
     at ([yshift=24mm]current page.south) {%
-    \textbf{\color{brand}Try it now.}\quad Open \textbf{\portal} and sign in with the demo account:\\[3pt]
+    \textbf{\color{brand}Try it now.}\quad Open \textbf{\demoportal} and sign in with the demo account:\\[3pt]
     \begin{tabular}{@{}ll@{}}Username & \demouser\\ Password & \demopass\end{tabular}};
   \node[anchor=south,text=muted,font=\footnotesize] at ([yshift=12mm]current page.south) {\edition{} edition \textbullet{} portal version \texttt{\appversion}};
 \end{tikzpicture}
@@ -111,21 +112,22 @@ Annotated sheet & A student's answer sheet with their ticks marked right or wron
   \item An \textbf{account} on the portal, made by its administrator. To try things out, use the demo account below.
 \end{itemize}
 
+\needspace{70mm}
 \subsection{Try it on the demo account}\label{sec:demo}
 
-\begin{panel}[colframe=brand,boxrule=1pt]
+\begin{panel}[colframe=brand,boxrule=1pt,unbreakable]
 \begin{tabular}{@{}l@{\hspace{6mm}}l@{}}
-\textbf{Address} & \portal\\[2pt]
+\textbf{Address} & \demoportal\\[2pt]
 \textbf{Username} & \demouser\\[2pt]
 \textbf{Password} & \demopass\\
 \end{tabular}
 
 \smallskip
-The demo account is open to everyone who has this guide. Use it to follow the chapters below with your own clicks: create an exam, write a few questions, build the papers, and so on.
+The demo is a separate copy of the portal, open to everyone who has this guide. Use it to follow the chapters below with your own clicks. It already holds sample exams: \emph{Maths Unit Test 1}, finished, the exam in this guide's pictures; \emph{Maths Class Test 3}, with its scans waiting to be checked, for you to finish; two exams in draft; and a question bank.
 \end{panel}
 
 \begin{careful}[Please]
-The demo account is \textbf{shared}: other people see what you put in it, and it may be emptied from time to time. \textbf{Don't put real students' names or marks in it}, and \textbf{don't change its password}, or the next person can't sign in. For real exams, ask the administrator for your own account.
+The demo account is \textbf{shared}: other people see what you put in it, and \textbf{everything goes back to the start every night}. \textbf{Don't put real students' names or marks in it}. Its password can't be changed. For real exams, ask the administrator for your own account on \portal.
 \end{careful}
 
 \subsection{How to read this guide}
@@ -144,7 +146,7 @@ The screenshots show a demo exam, \emph{Maths Unit Test 1} for class 8A, taken f
 
 \subsection{Sign in}
 
-Open \portal{} in your browser. The sign-in page asks for your username and password.
+Open \portal{} in your browser, or \demoportal{} for the demo. The sign-in page asks for your username and password.
 
 \begin{keep}
 \begin{guidefig}{The sign-in page.}
