@@ -1,0 +1,39 @@
+# Builds the guide's PDF on every push and pull request (kept as a workflow
+# artifact), and publishes it as a release when an edition is tagged (v*).
+name: PDF
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # to create the release
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the PDF
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: user-guide.tex
+
+      - name: Keep it as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: user-guide
+          path: user-guide.pdf
+
+      - name: Publish the edition
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp user-guide.pdf "amc-user-guide-${GITHUB_REF_NAME}.pdf"
+          gh release create "$GITHUB_REF_NAME" "amc-user-guide-${GITHUB_REF_NAME}.pdf" \
+            --verify-tag --title "User guide ${GITHUB_REF_NAME#v}" \
+            --notes "The AMC web portal user guide, edition ${GITHUB_REF_NAME#v}, showing amc-webapp $(cut -c1-7 amc-webapp.version)."

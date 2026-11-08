@@ -1,0 +1,8 @@
+# Added to amc-webapp's compose files by stack.sh: the test copy gets its
+# own image names, so the amc-web / amc-auth images of a copy you use for
+# real work stay as they are.
+services:
+  amc-web:
+    image: amc-web-guide
+  amc-auth:
+    image: amc-auth-guide

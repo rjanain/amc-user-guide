@@ -1,0 +1,235 @@
+% Style for the AMC web portal user guide: page look, boxes, step headers,
+% and annotated screenshots.
+%
+% Screenshots: capture/capture.mjs saves screenshots/<name>.png and writes
+% screenshots/shots.tex, which records each picture's size and where named
+% elements are on it (CSS pixels from the top left corner). Inside
+%   \begin{shot}[width]{name} ... \end{shot}
+% the coordinates are those pixels, so callouts follow the elements:
+%   \mk[pos]{key}{n}    red frame around element `key`, badge n at pos
+%                        (nw, ne, sw, se, n, s, e, w; default nw)
+%   \hl{key}             red frame only
+%   \focus{key,key}      fades everything but these elements
+%   \note{key}{anchor}{dx,dy}{text}
+%                        a note dx,dy px from the element's anchor
+%                        (north, south east...), with an arrow to it
+%   \mkxy{x}{y}{w}{h}{n} the same as \mk, at given pixels
+% A key missing from shots.tex draws nothing and logs a warning.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{amcguide}[2026/11/08 AMC web portal user guide]
+
+\RequirePackage[T1]{fontenc}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[sfdefault,scale=0.95]{inter}
+\RequirePackage[scaled=0.86]{beramono}
+\RequirePackage{microtype}
+\RequirePackage[a4paper,margin=19mm,top=22mm,bottom=22mm,headsep=6mm,footskip=10mm]{geometry}
+\RequirePackage{graphicx}
+\RequirePackage{amssymb}
+\RequirePackage{xcolor}
+\RequirePackage{tikz}
+\usetikzlibrary{calc,arrows.meta,positioning,shadows,fit,backgrounds}
+\RequirePackage[most]{tcolorbox}
+\RequirePackage{enumitem}
+\RequirePackage{titlesec}
+\RequirePackage{titletoc}
+\RequirePackage{fancyhdr}
+\RequirePackage{booktabs}
+\RequirePackage{tabularx}
+\RequirePackage{array}
+\RequirePackage{caption}
+\RequirePackage{needspace}
+\RequirePackage{xparse}
+\RequirePackage{etoolbox}
+\RequirePackage[hidelinks]{hyperref}
+\RequirePackage{bookmark}
+
+% ---------------------------------------------------------------- colours
+% The portal's own blue (as set on amc.rjana.in), and one strong red that
+% the interface never uses, for callouts.
+\definecolor{brand}{HTML}{3B5BDB}
+\definecolor{brandsoft}{HTML}{EDF2FF}
+\definecolor{brandink}{HTML}{1C2E80}
+\definecolor{ink}{HTML}{1F2329}
+\definecolor{muted}{HTML}{5C6370}
+\definecolor{line}{HTML}{D7DBE0}
+\definecolor{paper}{HTML}{F4F5F7}
+\definecolor{callout}{HTML}{E03131}
+\definecolor{okgreen}{HTML}{2B8A3E}
+\definecolor{oksoft}{HTML}{EBFBEE}
+\definecolor{warn}{HTML}{B35C00}
+\definecolor{warnsoft}{HTML}{FFF4E6}
+\definecolor{before}{HTML}{3B5BDB}
+\definecolor{after}{HTML}{0C8599}
+\color{ink}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 1pt}
+\linespread{1.08}
+\setlist{itemsep=2pt,topsep=3pt,parsep=0pt}
+\setlist[enumerate]{label=\textbf{\arabic*.},leftmargin=*}
+\setlist[itemize]{label=\textcolor{brand}{\small$\bullet$},leftmargin=*}
+
+% ---------------------------------------------------------------- headings
+\titleformat{\section}[block]
+  {\needspace{12\baselineskip}\normalfont\fontsize{20}{24}\selectfont\bfseries\color{brandink}}
+  {\colorbox{brand}{\makebox[1.25em]{\color{white}\thesection}}}{0.5em}{}
+  [\vspace{2pt}{\color{line}\titlerule[0.8pt]}]
+\titlespacing*{\section}{0pt}{0pt}{12pt}
+\titleformat{\subsection}
+  {\needspace{8\baselineskip}\normalfont\large\bfseries\color{brandink}}{\thesubsection}{0.6em}{}
+\titlespacing*{\subsection}{0pt}{14pt}{4pt}
+\titleformat{\subsubsection}
+  {\needspace{5\baselineskip}\normalfont\normalsize\bfseries\color{ink}}{}{0pt}{}
+\titlespacing*{\subsubsection}{0pt}{10pt}{2pt}
+\newcommand{\sectionbreak}{\clearpage}
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
+
+\titlecontents{section}[0pt]{\addvspace{7pt}\bfseries\color{brandink}}
+  {\contentslabel[\colorbox{brand}{\makebox[1.2em]{\color{white}\thecontentslabel}}]{0pt}\hspace{2em}}{}
+  {\titlerule*[0.6pc]{.}\contentspage}
+\titlecontents{subsection}[2em]{\addvspace{1pt}\small}
+  {\contentslabel{2.4em}}{}{\titlerule*[0.6pc]{.}\contentspage}
+
+% ---------------------------------------------------------------- page style
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\small\color{muted}AMC web portal \textbullet{} User guide}
+\fancyhead[R]{\small\color{muted}\nouppercase{\leftmark}}
+\fancyfoot[C]{\small\color{muted}\thepage}
+\renewcommand{\sectionmark}[1]{\markboth{#1}{}}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\small\color{muted}\thepage}}
+
+\captionsetup{font={small,color=muted},labelfont={bf,color=ink},labelsep=period,skip=5pt}
+
+% ---------------------------------------------------------------- small pieces
+% An on-screen label, as the portal writes it: \ui{Build preview}
+\newcommand\ui[1]{\textbf{\color{brandink}#1}}
+% A key on the keyboard
+\DeclareRobustCommand\key[1]{\tikz[baseline=(k.base)]\node[draw=line,fill=paper,rounded corners=2pt,inner xsep=3pt,inner ysep=1.5pt,font=\footnotesize\ttfamily](k){#1};}
+% A numbered badge, the same as on the screenshots
+\DeclareRobustCommand\badge[1]{\tikz[baseline=(b.base)]\node[circle,fill=callout,text=white,font=\scriptsize\bfseries,inner sep=0pt,minimum size=4.2mm](b){#1};}
+% The sidebar's padlock
+\DeclareRobustCommand\padlocksign{\tikz[baseline=-0.7ex]{\draw[line width=0.5pt,draw=line,fill=paper] (0,0) circle (2.5mm);
+  \draw[muted,line width=0.6pt] (-0.065,0.02) -- (-0.065,0.075) arc (180:0:0.065) -- (0.065,0.02); \fill[muted,rounded corners=0.3pt] (-0.1,-0.11) rectangle (0.1,0.03);}}
+% Pointers to another part of the guide
+\newcommand\seesec[1]{\hyperref[#1]{\textcolor{brand}{\textbf{Section~\ref*{#1}}}} (page~\pageref*{#1})}
+\newcommand\more[2]{%
+  \par\smallskip\noindent\hyperref[#1]{\tikz[baseline=(m.base)]\node[fill=brandsoft,draw=brand!40,rounded corners=3pt,inner xsep=6pt,inner ysep=3pt,font=\small](m)
+    {\textcolor{brand}{\textbf{$\rightarrow$}}\ \textbf{#2}\ \textcolor{muted}{Section~\ref*{#1}, page~\pageref*{#1}}};}\par\smallskip}
+
+% A list explaining the badges of the screenshot above it
+\newlist{callouts}{enumerate}{1}
+\setlist[callouts]{label=\badge{\arabic*},leftmargin=7mm,labelsep=2mm,itemsep=3pt,topsep=4pt}
+
+% Boxes
+\newtcolorbox{tip}[1][Tip]{enhanced,colback=oksoft,colframe=okgreen,boxrule=0pt,leftrule=3pt,arc=2pt,
+  left=8pt,right=8pt,top=5pt,bottom=5pt,fonttitle=\bfseries\small,coltitle=okgreen,colbacktitle=oksoft,
+  title={#1},attach title to upper={\ \ },before skip=8pt,after skip=8pt}
+\newtcolorbox{careful}[1][Watch out]{enhanced,colback=warnsoft,colframe=warn,boxrule=0pt,leftrule=3pt,arc=2pt,
+  left=8pt,right=8pt,top=5pt,bottom=5pt,fonttitle=\bfseries\small,coltitle=warn,colbacktitle=warnsoft,
+  title={#1},attach title to upper={\ \ },before skip=8pt,after skip=8pt}
+\newtcolorbox{why}[1][Why]{enhanced,colback=brandsoft,colframe=brand,boxrule=0pt,leftrule=3pt,arc=2pt,
+  left=8pt,right=8pt,top=5pt,bottom=5pt,fonttitle=\bfseries\small,coltitle=brand,colbacktitle=brandsoft,
+  title={#1},attach title to upper={\ \ },before skip=8pt,after skip=8pt}
+\newtcolorbox{panel}[1][]{enhanced,breakable,colback=white,colframe=line,boxrule=0.6pt,arc=3pt,
+  left=10pt,right=10pt,top=8pt,bottom=8pt,before skip=8pt,after skip=8pt,#1}
+
+% The start of each of the ten steps: \stephead{3}{before}{Papers}{one line}
+\newcommand\stephead[4]{%
+  \needspace{14\baselineskip}%
+  \par\medskip\noindent
+  \begin{tikzpicture}
+    \node[fill=#2,rounded corners=4pt,minimum width=\linewidth,minimum height=15mm,inner sep=0pt,anchor=west] (bar) at (0,0) {};
+    \node[circle,fill=white,text=#2,font=\Large\bfseries,minimum size=10mm,anchor=west] at ([xshift=4mm]bar.west) {#1};
+    \node[anchor=south west,text=white,font=\scriptsize\bfseries] at ([xshift=17mm,yshift=0.6mm]bar.west)
+      {STEP #1 OF 10 \textbullet{} \ifstrequal{#2}{before}{BEFORE THE EXAM}{AFTER THE EXAM}};
+    \node[anchor=north west,text=white,font=\Large\bfseries] at ([xshift=17mm,yshift=0.8mm]bar.west) {#3};
+  \end{tikzpicture}\par\nopagebreak\smallskip
+  \noindent{\color{muted}\itshape #4}\par\nopagebreak\smallskip}
+
+% ---------------------------------------------------------------- screenshots
+\tikzset{
+  shotframe/.style={draw=line,line width=0.6pt},
+  mkframe/.style={draw=callout,line width=1.5pt,rounded corners=2.5pt},
+  mkbadge/.style={circle,fill=callout,text=white,font=\footnotesize\bfseries,inner sep=0pt,minimum size=5.4mm,
+    drop shadow={opacity=0.25,shadow xshift=0.3mm,shadow yshift=-0.3mm}},
+  mknote/.style={fill=white,draw=callout,line width=1pt,rounded corners=3pt,font=\footnotesize,text=ink,
+    align=left,inner sep=4pt,text width=#1},
+  mknote/.default=38mm,
+  mkarrow/.style={-{Stealth[length=2.6mm,width=2mm]},draw=callout,line width=1.3pt},
+}
+\newcommand\shotdata[3]{\expandafter\gdef\csname shotW@#1\endcsname{#2}\expandafter\gdef\csname shotH@#1\endcsname{#3}}
+\newcommand\shotbox[6]{\expandafter\gdef\csname shotB@#1@#2\endcsname{\def\bx{#3}\def\by{#4}\def\bw{#5}\def\bh{#6}}}
+\InputIfFileExists{screenshots/shots.tex}{}{\PackageWarning{amcguide}{screenshots/shots.tex not found: run capture/capture.mjs}}
+
+\newif\ifgotbox
+% Sets \bx \by \bw \bh from the box `key` of the current shot.
+\newcommand\getbox[1]{%
+  \ifcsname shotB@\shotname @#1\endcsname
+    \csname shotB@\shotname @#1\endcsname\gotboxtrue
+  \else
+    \PackageWarning{amcguide}{No box "#1" on screenshot "\shotname"}\gotboxfalse
+  \fi}
+\newcommand\pd{4}% padding around a frame, in px
+
+% \begin{shot}[width]{name}
+\NewDocumentEnvironment{shot}{O{\linewidth} m}{%
+  \def\shotname{#2}%
+  \ifcsname shotW@#2\endcsname
+    \edef\shotW{\csname shotW@#2\endcsname}\edef\shotH{\csname shotH@#2\endcsname}%
+  \else
+    \PackageWarning{amcguide}{No data for screenshot "#2"}\def\shotW{1440}\def\shotH{900}%
+  \fi
+  \pgfmathsetmacro\shotunit{#1/\shotW}%
+  \begin{tikzpicture}[x=\shotunit pt,y=-\shotunit pt,baseline=(current bounding box.north)]
+    \node[anchor=north west,inner sep=0pt] at (0,0)
+      {\IfFileExists{screenshots/#2.png}{\includegraphics[width=#1]{screenshots/#2}}{\fbox{\parbox[c][#1*\shotH/\shotW][c]{#1}{\centering missing: #2.png}}}};
+    \draw[shotframe] (0,0) rectangle (\shotW,\shotH);
+}{%
+  \end{tikzpicture}}
+
+\NewDocumentCommand\mk{O{nw} m m}{%
+  \getbox{#2}%
+  \ifgotbox
+    \draw[mkframe] (\bx-\pd,\by-\pd) rectangle (\bx+\bw+\pd,\by+\bh+\pd);
+    \mkbadgeat{#1}{#3}%
+  \fi}
+\NewDocumentCommand\mkxy{O{nw} m m m m m}{%
+  \def\bx{#2}\def\by{#3}\def\bw{#4}\def\bh{#5}%
+  \draw[mkframe] (\bx-\pd,\by-\pd) rectangle (\bx+\bw+\pd,\by+\bh+\pd);
+  \mkbadgeat{#1}{#6}}
+\newcommand\mkbadgeat[2]{%
+  \ifstrequal{#1}{nw}{\node[mkbadge] at (\bx-\pd,\by-\pd) {#2};}{}%
+  \ifstrequal{#1}{ne}{\node[mkbadge] at (\bx+\bw+\pd,\by-\pd) {#2};}{}%
+  \ifstrequal{#1}{sw}{\node[mkbadge] at (\bx-\pd,\by+\bh+\pd) {#2};}{}%
+  \ifstrequal{#1}{se}{\node[mkbadge] at (\bx+\bw+\pd,\by+\bh+\pd) {#2};}{}%
+  \ifstrequal{#1}{w}{\node[mkbadge,anchor=east] at (\bx-\pd-2,\by+\bh/2) {#2};}{}%
+  \ifstrequal{#1}{e}{\node[mkbadge,anchor=west] at (\bx+\bw+\pd+2,\by+\bh/2) {#2};}{}%
+  \ifstrequal{#1}{n}{\node[mkbadge,anchor=south] at (\bx+\bw/2,\by-\pd-2) {#2};}{}%
+  \ifstrequal{#1}{s}{\node[mkbadge,anchor=north] at (\bx+\bw/2,\by+\bh+\pd+2) {#2};}{}%
+  \ifstrequal{#1}{in}{\node[mkbadge,anchor=north west] at (\bx+2,\by+2) {#2};}{}}
+\newcommand\hl[1]{\getbox{#1}\ifgotbox\draw[mkframe] (\bx-\pd,\by-\pd) rectangle (\bx+\bw+\pd,\by+\bh+\pd);\fi}
+% Fades everything but the listed elements.
+\newcommand\focus[1]{%
+  \begin{scope}[on background layer=false]
+  \path[fill=white,fill opacity=0.62,even odd rule] (0,0) rectangle (\shotW,\shotH)
+    \foreach \k in {#1}{ [/utils/exec={\getbox{\k}}] (\bx-\pd,\by-\pd) rectangle (\bx+\bw+\pd,\by+\bh+\pd) };
+  \end{scope}}
+% \note[width]{key}{anchor}{dx,dy}{text}
+\NewDocumentCommand\note{O{38mm} m m m m}{%
+  \getbox{#2}%
+  \ifgotbox
+    \coordinate (nb-nw) at (\bx-\pd,\by-\pd);
+    \coordinate (nb-se) at (\bx+\bw+\pd,\by+\bh+\pd);
+    \node[inner sep=0pt,fit=(nb-nw)(nb-se)] (nb) {};
+    \node[mknote=#1] (nt) at ($(nb.#3)+(#4)$) {#5};
+    \draw[mkarrow] (nt) -- (nb.#3);
+  \fi}
+
+% A figure and the list explaining it, kept on one page.
+\newenvironment{keep}{\par\medskip\noindent\begin{minipage}{\linewidth}\setlength{\parskip}{5pt plus 1pt}}{\end{minipage}\par\medskip}
+% A centred, numbered figure that stays where it is written.
+\NewDocumentEnvironment{guidefig}{m}{\par\medskip\begin{center}}{\par\captionof{figure}{#1}\end{center}\par\smallskip}

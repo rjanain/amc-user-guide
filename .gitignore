@@ -1,0 +1,19 @@
+# LaTeX build files and the PDF (each edition's PDF is a GitHub release)
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.toc
+*.synctex.gz
+user-guide.pdf
+
+# macOS (the ._* twins appear on exFAT drives)
+._*
+.DS_Store
+
+# Python
+__pycache__/
+
+# A failed capture scene's picture
+screenshots/_failed.png
