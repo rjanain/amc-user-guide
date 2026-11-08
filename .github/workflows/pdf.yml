@@ -15,15 +15,15 @@ jobs:
     permissions:
       contents: write   # to create the release
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Build the PDF
-        uses: xu-cheng/latex-action@v3
+        uses: xu-cheng/latex-action@v4
         with:
           root_file: user-guide.tex
 
       - name: Keep it as an artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: user-guide
           path: user-guide.pdf
